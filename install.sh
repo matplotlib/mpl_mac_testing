@@ -127,7 +127,7 @@ function install_freetype {
 
 function install_libpng {
     VERSION=$1
-    curl -L http://downloads.sourceforge.net/project/libpng/libpng16/$VERSION/libpng-$VERSION.tar.gz > libpng.tar.gz
+    curl -L http://sourceforge.net/projects/libpng/files/libpng16/$VERSION/libpng-$VERSION.tar.gz/download > libpng.tar.gz
     require_success "Failed to download libpng"
 
     tar -xzf libpng.tar.gz
