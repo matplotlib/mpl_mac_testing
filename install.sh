@@ -124,10 +124,27 @@ function install_freetype {
     cd ..
 }
 
+# libpng is problematic for two reasons
+# 1) libpng is distributed, by default, x-compressed.  Mac does not come with xz (the x-unzipper)
+# 2) libpng has the habit of changing the download path for the source tarball when newer version are released.
+#
+# Options to installing are:
+# 1) install xz, use default libpng
+# 2) hard code path to tar.gz file.  Make sure to fail when libpng changes the path.
+# I don't want to install any more software, so we're going with 2)
+#
+# latest version of libpng, x-compressed
+# http://sourceforge.net/projects/libpng/files/latest/download
+#
+# specific version of libpng, g-compressed
+# http://sourceforge.net/projects/libpng/files/libpng16/1.6.6/libpng-1.6.6.tar.gz/download
+#
+# This path will change when a newer version is released.  On that day, the new path will be (approximately)
+# http://sourceforge.net/projects/libpng/files/libpng16/older-releases/1.6.6/libpng-1.6.6.tar.gz/download
 
 function install_libpng {
-    curl -L http://sourceforge.net/projects/libpng/files/latest/download > libpng.tar.gz
-    require_success "Failed to download libpng"
+    curl -L http://sourceforge.net/projects/libpng/files/libpng16/1.6.6/libpng-1.6.6.tar.gz/download > libpng.tar.gz
+    require_success "Failed to download libpng.  Has libpng been updated again?"
 
     tar -xzvf libpng.tar.gz
     require_success "Failed to untar libpng"
