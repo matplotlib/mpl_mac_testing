@@ -129,7 +129,7 @@ function install_libpng {
     curl -L http://sourceforge.net/projects/libpng/files/latest/download > libpng.tar.gz
     require_success "Failed to download libpng"
 
-    tar -xzf libpng.tar.gz
+    tar -xzvf libpng.tar.gz
     require_success "Failed to untar libpng"
 
     cd libpng-1.?.?
