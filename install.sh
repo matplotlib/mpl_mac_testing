@@ -339,6 +339,7 @@ elif [ "$TEST" == "macports_backends" ] ; then
     sudo port install -f -v py27-matplotlib +pyside
     export PYTHON=/opt/local/bin/python2.7
     export PIP="sudo /opt/local/bin/pip-2.7"
+    export SUDO="sudo"
     install_matplotlib
 
 else
