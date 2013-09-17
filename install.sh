@@ -332,7 +332,8 @@ elif [ "$TEST" == "macpython33_10.8" ] ; then
 elif [ "$TEST" == "macports_backends" ] ; then
 
     install_macports
-    sudo port install -f -v py27-matplotlib +cairo +dvipng +ghostscript +gtk2 +latex +pdftops +pyside + tkinter +webagg
+    # there are tests for pdf, pgf, qt, and svg backends
+    sudo port install -f -v py27-matplotlib +dvipng +ghostscript +latex +pdftops +pyside
     export PYTHON=/opt/local/bin/python2.7
     export PIP="sudo /opt/local/bin/pip-2.7"
     install_matplotlib
