@@ -27,6 +27,7 @@ function install_macports {
     export PATH=$PREFIX/bin:$PATH
     sudo port -v selfupdate
     sudo port install pkgconfig libpng freetype
+    sudo port install inkscape ghostscript
     require_success "Failed to install matplotlib dependencies"
 }
 
