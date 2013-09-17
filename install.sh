@@ -172,6 +172,7 @@ if [ "$TEST" == "brew_system" ] ; then
 
     sudo easy_install pip
     brew install freetype libpng pkg-config
+    brew install inkscape ghostscript
     require_success "Failed to install matplotlib dependencies"
 
     if [ -z "$VENV" ]; then
@@ -197,6 +198,7 @@ elif [ "$TEST" == "brew_py" ] ; then
     require_success "Failed to install python"
 
     brew install freetype libpng pkg-config
+    brew install inkscape ghostscript
     require_success "Failed to install matplotlib dependencies"
 
     if [ -z "$VENV" ] ; then
@@ -221,6 +223,7 @@ elif [ "$TEST" == "brew_py3" ] ; then
     require_success "Failed to install python"
 
     brew install freetype libpng pkg-config
+    brew install inkscape ghostscript
     require_success "Failed to install matplotlib dependencies"
 
     if [ -z "$VENV" ] ; then
