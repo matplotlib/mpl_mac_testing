@@ -126,16 +126,15 @@ function install_freetype {
 
 
 function install_libpng {
-    VERSION=$1
-    curl -L http://sourceforge.net/projects/libpng/files/libpng16/$VERSION/libpng-$VERSION.tar.gz/download > libpng.tar.gz
+    curl -L http://sourceforge.net/projects/libpng/files/latest/download > libpng.tar.gz
     require_success "Failed to download libpng"
 
     tar -xzf libpng.tar.gz
-    cd libpng-$VERSION
+    cd libpng-1.?.?
     ./configure --enable-shared=no --enable-static=true
     make
     sudo make install
-    require_success "Failed to install libpng $VERSION"
+    require_success "Failed to install libpng"
     cd ..
 }
 
@@ -278,7 +277,7 @@ elif [ "$TEST" == "macpython27_10.8" ] ; then
     XQUARTZ_VERSION="2.7.4"
     install_mac_python $PY_VERSION
     install_tkl_85
-    install_libpng $PNG_VERSION
+    install_libpng
     install_freetype $FT_VERSION
 
     curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py > ez_setup.py
