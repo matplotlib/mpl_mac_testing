@@ -338,6 +338,20 @@ elif [ "$TEST" == "macpython33_10.8" ] ; then
 
     install_matplotlib
 
+elif [ "$TEST" == "macports_backends" ] ; then
+
+    install_macports
+    # there are tests for pdf, pgf, qt, and svg backends
+    # sudo port install -f -v py27-matplotlib +dvipng +ghostscript +latex +pdftops +pyside
+
+    # qt only
+    sudo port install -f -v py27-matplotlib +pyside
+    sudo port install inkscape ghostscript
+    export PYTHON=/opt/local/bin/python2.7
+    export PIP="sudo /opt/local/bin/pip-2.7"
+    export SUDO="sudo"
+    install_matplotlib
+
 else
     echo "Unknown test setting ($TEST)"
     exit -1
