@@ -130,7 +130,11 @@ function install_libpng {
     require_success "Failed to download libpng"
 
     tar -xzf libpng.tar.gz
+    require_success "Failed to untar libpng"
+
     cd libpng-1.?.?
+    require_success "Failed to enter libpng"
+
     ./configure --enable-shared=no --enable-static=true
     make
     sudo make install
