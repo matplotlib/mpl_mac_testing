@@ -337,6 +337,7 @@ elif [ "$TEST" == "macports_backends" ] ; then
 
     # qt only
     sudo port install -f -v py27-matplotlib +pyside
+    sudo port install inkscape ghostscript
     export PYTHON=/opt/local/bin/python2.7
     export PIP="sudo /opt/local/bin/pip-2.7"
     export SUDO="sudo"
