@@ -27,6 +27,7 @@ function install_macports {
     export PATH=$PREFIX/bin:$PATH
     sudo port -v selfupdate
     sudo port install pkgconfig libpng freetype
+    sudo port install ghostscript  
     require_success "Failed to install matplotlib dependencies"
 }
 
@@ -172,6 +173,7 @@ if [ "$TEST" == "brew_system" ] ; then
 
     sudo easy_install pip
     brew install freetype libpng pkg-config
+    brew install ghostscript
     require_success "Failed to install matplotlib dependencies"
 
     if [ -z "$VENV" ]; then
@@ -197,6 +199,7 @@ elif [ "$TEST" == "brew_py" ] ; then
     require_success "Failed to install python"
 
     brew install freetype libpng pkg-config
+    brew install ghostscript
     require_success "Failed to install matplotlib dependencies"
 
     if [ -z "$VENV" ] ; then
@@ -221,6 +224,7 @@ elif [ "$TEST" == "brew_py3" ] ; then
     require_success "Failed to install python"
 
     brew install freetype libpng pkg-config
+    brew install ghostscript
     require_success "Failed to install matplotlib dependencies"
 
     if [ -z "$VENV" ] ; then
