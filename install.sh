@@ -309,6 +309,7 @@ elif [ "$TEST" == "macpython27_10.8" ] ; then
     PREFIX=/Library/Frameworks/Python.framework/Versions/2.7
     sudo $PREFIX/bin/easy_install-2.7 pip
     export PIP="sudo $PREFIX/bin/pip-2.7"
+    export SUDO="sudo"
 
     # pip gets confused as to which PYTHONPATH it is supposed to look at
     # make sure to upgrade default-installed packges so that they actually
@@ -346,6 +347,7 @@ elif [ "$TEST" == "macpython33_10.8" ] ; then
     PREFIX=/Library/Frameworks/Python.framework/Versions/3.3
     sudo $PREFIX/bin/easy_install pip
     export PIP="sudo $PREFIX/bin/pip-3.3"
+    export SUDO="sudo"
 
     if [ -z "$BIN_NUMPY" ] ; then
         $PIP install numpy
