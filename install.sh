@@ -124,18 +124,38 @@ function install_freetype {
     cd ..
 }
 
+# libpng is problematic for two reasons
+# 1) libpng is distributed, by default, x-compressed.  Mac does not come with xz (the x-unzipper)
+# 2) libpng has the habit of changing the download path for the source tarball when newer version are released.
+#
+# Options to installing are:
+# 1) install xz, use default libpng
+# 2) hard code path to tar.gz file.  Make sure to fail when libpng changes the path.
+# I don't want to install any more software, so we're going with 2)
+#
+# latest version of libpng, x-compressed
+# http://sourceforge.net/projects/libpng/files/latest/download
+#
+# specific version of libpng, g-compressed
+# http://sourceforge.net/projects/libpng/files/libpng16/1.6.6/libpng-1.6.6.tar.gz/download
+#
+# This path will change when a newer version is released.  On that day, the new path will be (approximately)
+# http://sourceforge.net/projects/libpng/files/libpng16/older-releases/1.6.6/libpng-1.6.6.tar.gz/download
 
 function install_libpng {
-    VERSION=$1
-    curl -L http://downloads.sourceforge.net/project/libpng/libpng16/$VERSION/libpng-$VERSION.tar.gz > libpng.tar.gz
-    require_success "Failed to download libpng"
+    curl -L http://sourceforge.net/projects/libpng/files/libpng16/1.6.6/libpng-1.6.6.tar.gz/download > libpng.tar.gz
+    require_success "Failed to download libpng.  Has libpng been updated again?"
 
-    tar -xzf libpng.tar.gz
-    cd libpng-$VERSION
+    tar -xzvf libpng.tar.gz
+    require_success "Failed to untar libpng"
+
+    cd libpng-1.?.?
+    require_success "Failed to enter libpng"
+
     ./configure --enable-shared=no --enable-static=true
     make
     sudo make install
-    require_success "Failed to install libpng $VERSION"
+    require_success "Failed to install libpng"
     cd ..
 }
 
@@ -278,7 +298,7 @@ elif [ "$TEST" == "macpython27_10.8" ] ; then
     XQUARTZ_VERSION="2.7.4"
     install_mac_python $PY_VERSION
     install_tkl_85
-    install_libpng $PNG_VERSION
+    install_libpng
     install_freetype $FT_VERSION
 
     curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py > ez_setup.py
@@ -289,6 +309,7 @@ elif [ "$TEST" == "macpython27_10.8" ] ; then
     PREFIX=/Library/Frameworks/Python.framework/Versions/2.7
     sudo $PREFIX/bin/easy_install-2.7 pip
     export PIP="sudo $PREFIX/bin/pip-2.7"
+    export SUDO="sudo"
 
     # pip gets confused as to which PYTHONPATH it is supposed to look at
     # make sure to upgrade default-installed packges so that they actually
@@ -326,6 +347,7 @@ elif [ "$TEST" == "macpython33_10.8" ] ; then
     PREFIX=/Library/Frameworks/Python.framework/Versions/3.3
     sudo $PREFIX/bin/easy_install pip
     export PIP="sudo $PREFIX/bin/pip-3.3"
+    export SUDO="sudo"
 
     if [ -z "$BIN_NUMPY" ] ; then
         $PIP install numpy
