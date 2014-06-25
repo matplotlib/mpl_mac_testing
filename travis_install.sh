@@ -47,7 +47,7 @@ function install_matplotlib {
 
 
 function install_tkl_85 {
-    curl $TCL_DMG > ActiveTCL.dmg
+    curl $TCL_RELEASE_DMG > ActiveTCL.dmg
     require_success "Failed to download TCL $TCL_VERSION"
     hdiutil attach ActiveTCL.dmg -mountpoint /Volumes/ActiveTcl
     sudo installer -pkg /Volumes/ActiveTcl/ActiveTcl-8.5.pkg -target /
