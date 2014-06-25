@@ -38,7 +38,8 @@ env:
     - INSTALL_TYPE=macports VERSION=3.4 VENV=venv
 
 before_script:
-  - gem install travis-artifacts
+    # This seems to be broken at the moment
+    # - gem install travis-artifacts
 
 install:
   - set -vx  # echo commands
@@ -56,5 +57,5 @@ script:
   - source ../travis_test.sh
 
 after_failure:
-  - echo $PWD
-  - ../travis_upload.sh
+    - echo $PWD
+    # - ../travis_upload.sh
