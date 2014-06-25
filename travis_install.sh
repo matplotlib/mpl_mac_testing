@@ -1,6 +1,7 @@
 # Travis install
 # source this script to run the install on travis OSX workers
 
+# Get needed utilities
 source terryfy/travis_tools.sh
 
 # Package versions / URLs for fresh source builds (MacPython only)
@@ -39,7 +40,7 @@ function install_matplotlib {
     local sudo=`get_pip_sudo`
 
     cd matplotlib
-    cc_cmd $mpl_cc $mpl_cxx $sudo $PYTHON_CMD setup.py install
+    cc_cmd $mpl_cc $mpl_cxx $sudo $PYTHON_EXE setup.py install
     require_success "Failed to install matplotlib"
     cd ..
 }
@@ -98,24 +99,6 @@ function install_xquartz {
 }
 
 
-function get_site_packages {
-    check_python
-    $PYTHON_CMD -c "import distutils; print(distutils.sysconfig.get_python_lib())"
-
-
-function enable_site_packages {
-    if [ -z "$VENV" ]; then
-        return
-    fi
-    touch "`get_site_packages`/../no-global-site-packages.txt"
-
-
-function get_pip_sudo {
-    check_pip
-    if [ "${PIP_CMD:0:4}" == "sudo" ]; then
-        echo "sudo"
-    fi
-
 get_python_environment $INSTALL_TYPE $VERSION $VENV
 
 case $INSTALL_TYPE in
@@ -135,9 +118,10 @@ case $INSTALL_TYPE in
         install_freetype $FT_VERSION
         ;;
 esac
-if [ -z "$VENV" ] && [[ $INSTALL_TYPE =~ ^(macports|system)$ ]]; then
-    enable_site_packages
+# Numpy installation can be system-wide or from pip
+if [ -n "$VENV" ] && [[ $INSTALL_TYPE =~ ^(macports|system)$ ]]; then
+    toggle_py_sys_site_packages
 else:
     $PIP_CMD install numpy
 fi
-install_matplotlib $CC $CXX $SUDO
+install_matplotlib $CC $CXX
