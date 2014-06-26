@@ -28,9 +28,9 @@ function install_matplotlib {
     # Can't just prepend empty sudo; causes error of form "CC=clang command
     # not found"
     if [ -z "$sudo" ]; then
-        CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng -lbz2" $PYTHON_EXE setup.py install
+        CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng" $PYTHON_EXE setup.py install
     else
-        sudo CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng -lbz2" $PYTHON_EXE setup.py install
+        sudo CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng" $PYTHON_EXE setup.py install
     fi
     require_success "Failed to install matplotlib"
     cd ..
