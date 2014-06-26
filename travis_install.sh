@@ -21,18 +21,18 @@ SYS_CC=clang
 SYS_CXX=clang++
 
 
-function _run_install_matplotlib {
-    CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng -lbz2" $PYTHON_EXE setup.py install
-    require_success "Failed to install matplotlib"
-}
-
-
 function install_matplotlib {
     # Accept c and c++ compilers, default to cc, c++
     local sudo=`get_pip_sudo`
     cd matplotlib
-    # Use function to preserve prepended arguments with empty sudo
-    $sudo _run_install_matplotlib
+    # Can't just prepend empty sudo; causes error of form "CC=clang command
+    # not found"
+    if [ -z "$sudo" ]; then
+        CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng -lbz2" $PYTHON_EXE setup.py install
+    else
+        sudo CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng -lbz2" $PYTHON_EXE setup.py install
+    fi
+    require_success "Failed to install matplotlib"
     cd ..
 }
 
