@@ -21,22 +21,18 @@ SYS_CC=clang
 SYS_CXX=clang++
 
 
+function _run_install_matplotlib {
+    CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng -lbz2" $PYTHON_EXE setup.py install
+    require_success "Failed to install matplotlib"
+}
+
+
 function install_matplotlib {
     # Accept c and c++ compilers, default to cc, c++
     local sudo=`get_pip_sudo`
     cd matplotlib
-    # Prepending empty sudo variable causes bash to get confused
-    # e.g
-    # $ sudo=""
-    # $ $sudo CC=clang echo "something"
-    #
-    # gives `-bash: CC=clang: command not found`
-    if [ -z "$sudo" ]; then
-        CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
-    else
-        sudo CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
-    fi
-    require_success "Failed to install matplotlib"
+    # Use function to preserve prepended arguments with empty sudo
+    $sudo _run_install_matplotlib
     cd ..
 }
 
@@ -101,7 +97,7 @@ function install_freetype {
     cd freetype-$version
     require_success "Failed to cd to freetype directory"
 
-    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
+    CC=${SYS_CC} CXX=${SYS_CXX} LDFLAGS="-lpng -lbz2" ./configure --enable-shared=no --enable-static=true
     make
     sudo make install
     require_success "Failed to install freetype $version"
@@ -128,7 +124,7 @@ function patch_sys_python {
     # This should be benign for 10.9.3 though
     local py_sys_dir="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7"
     pushd $py_sys_dir
-    if [ -n "`grep fused-add _sysconfigdata.py`" ]; then
+    if [ -n "`grep fused-madd _sysconfigdata.py`" ]; then
         sudo sed -i '.old' 's/ -m\(no-\)\{0,1\}fused-madd //g' _sysconfigdata.py
         sudo rm _sysconfigdata.pyo _sysconfigdata.pyc
     fi
