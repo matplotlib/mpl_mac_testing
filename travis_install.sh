@@ -86,8 +86,7 @@ function install_bz2 {
     tar -xzf bzip2.tar.gz
     cd bzip2-$version
     require_success "Failed to cd to bz2 directory"
-    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
-    make
+    CC=${SYS_CC} CXX=${SYS_CXX} make
     sudo make install
     require_success "Failed to install bz2 $version"
     cd ..
@@ -122,6 +121,7 @@ function install_xquartz {
     sudo installer -pkg /Volumes/XQuartz/XQuartz.pkg -target /
     require_success "Failed to install XQuartz $version"
 }
+
 
 get_python_environment $INSTALL_TYPE $VERSION $VENV
 
