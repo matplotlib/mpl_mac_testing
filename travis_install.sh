@@ -143,7 +143,7 @@ case $INSTALL_TYPE in
         ;;
     macports)
         py_mm_nodot=`get_py_mm_nodot`
-        sudo port install py$py_mm_nodot-numpy libpng freetype
+        sudo port install py$py_mm_nodot-numpy libpng freetype pkgconfig
         require_success "Failed to install matplotlib dependencies"
         ;;
     macpython):
