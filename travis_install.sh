@@ -17,8 +17,10 @@ XQ_BASE_URL=http://xquartz.macosforge.org/downloads/SL
 XQUARTZ_VERSION="2.7.4"
 
 # Compiler defaults
-SYS_CC=clang
-SYS_CXX=clang++
+# See http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa
+ADD_FLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
+SYS_CC="clang $ADD_FLAGS"
+SYS_CXX="clang++ $ADD_FLAGS"
 
 
 function install_matplotlib {
