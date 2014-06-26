@@ -15,6 +15,8 @@ TCL_VERSION="8.5.14.0"
 TCL_RELEASE_DMG="http://downloads.activestate.com/ActiveTcl/releases/$TCL_VERSION/ActiveTcl$TCL_VERSION.296777-macosx10.5-i386-x86_64-threaded.dmg"
 XQ_BASE_URL=http://xquartz.macosforge.org/downloads/SL
 XQUARTZ_VERSION="2.7.4"
+PKG_CONFIG_URL=http://pkgconfig.freedesktop.org/releases
+PKG_CONFIG_VERSION=0.28
 
 # Compiler defaults
 SYS_CC=clang
@@ -52,6 +54,20 @@ function check_version {
         exit 1
     fi
 }
+
+
+function install_pkgconfig {
+    local version=$1
+    check_version
+    curl $PKG_CONFIG_URL/pkg-config-$version.tar.gz > pkg-config.tar.gz
+    tar -xzf pkg-config.tar.gz
+    cd pkg-config-$version
+    ./configure --with-internal-glib
+    make
+    sudo make install
+    cd ..
+}
+
 
 function install_libpng {
     local version=$1
@@ -146,6 +162,7 @@ case $INSTALL_TYPE in
         require_success "Failed to install matplotlib dependencies"
         ;;
     macpython):
+        install_pkgconfig $PKG_CONFIG_VERSION
         install_tkl_85
         install_libpng $PNG_VERSION
         install_bz2 $BZ2_VERSION
