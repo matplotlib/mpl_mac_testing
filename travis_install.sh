@@ -9,6 +9,8 @@ FT_BASE_URL=http://sourceforge.net/projects/freetype/files/freetype2
 FT_VERSION="2.5.3"
 PNG_BASE_URL=http://downloads.sourceforge.net/project/libpng/libpng16
 PNG_VERSION="1.6.10"
+BZ2_BASE_URL=http://www.bzip.org
+BZ2_VERSION=1.0.6
 TCL_VERSION="8.5.14.0"
 TCL_RELEASE_DMG="http://downloads.activestate.com/ActiveTcl/releases/$TCL_VERSION/ActiveTcl$TCL_VERSION.296777-macosx10.5-i386-x86_64-threaded.dmg"
 XQ_BASE_URL=http://xquartz.macosforge.org/downloads/SL
@@ -22,9 +24,18 @@ SYS_CXX=clang++
 function install_matplotlib {
     # Accept c and c++ compilers, default to cc, c++
     local sudo=`get_pip_sudo`
-
     cd matplotlib
-    $sudo CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
+    # Prepending empty sudo variable causes bash to get confused
+    # e.g
+    # $ sudo=""
+    # $ $sudo CC=clang echo "something"
+    #
+    # gives `-bash: CC=clang: command not found`
+    if [ -z "$sudo" ]; then
+        CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
+    else
+        sudo CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
+    fi
     require_success "Failed to install matplotlib"
     cd ..
 }
@@ -39,25 +50,16 @@ function install_tkl_85 {
 }
 
 
-function install_freetype {
-    local ft_version=$1
-    curl -L $FT_BASE_URL/$ft_version/freetype-$ft_version.tar.bz2/download > freetype.tar.bz2
-    require_success "Failed to download freetype"
-
-    tar -xjf freetype.tar.bz2
-    cd freetype-$ft_version
-    require_success "Failed to cd to freetype directory"
-
-    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
-    make
-    sudo make install
-    require_success "Failed to install freetype $FT_VERSION"
-    cd ..
+function check_version {
+    if [ -z "$version" ]; then
+        echo "Need version"
+        exit 1
+    fi
 }
-
 
 function install_libpng {
     local version=$1
+    check_version
     curl -L $PNG_BASE_URL/$version/libpng-$version.tar.gz > libpng.tar.gz
     require_success "Failed to download libpng"
 
@@ -72,16 +74,52 @@ function install_libpng {
 }
 
 
+function install_bz2 {
+    local version=$1
+    check_version
+    http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
+    curl -L $BZ2_BASE_URL/$version/bzip2-$version.tar.gz > bzip2.tar.gz
+    require_success "Failed to download bz2"
+
+    tar -xzf bzip2.tar.gz
+    cd bzip2-$version
+    require_success "Failed to cd to bz2 directory"
+    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
+    make
+    sudo make install
+    require_success "Failed to install bz2 $version"
+    cd ..
+}
+
+
+function install_freetype {
+    local version=$1
+    check_version
+    curl -L $FT_BASE_URL/$version/freetype-$version.tar.bz2/download > freetype.tar.bz2
+    require_success "Failed to download freetype"
+
+    tar -xjf freetype.tar.bz2
+    cd freetype-$version
+    require_success "Failed to cd to freetype directory"
+
+    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
+    make
+    sudo make install
+    require_success "Failed to install freetype $version"
+    cd ..
+}
+
+
 function install_xquartz {
-    VERSION=$1
-    curl $XQ_BASE_URL/XQuartz-$VERSION.dmg > xquartz.dmg
+    local version=$1
+    check_version
+    curl $XQ_BASE_URL/XQuartz-$version.dmg > xquartz.dmg
     require_success "failed to download XQuartz"
 
     hdiutil attach xquartz.dmg -mountpoint /Volumes/XQuartz
     sudo installer -pkg /Volumes/XQuartz/XQuartz.pkg -target /
-    require_success "Failed to install XQuartz $VERSION"
+    require_success "Failed to install XQuartz $version"
 }
-
 
 get_python_environment $INSTALL_TYPE $VERSION $VENV
 
@@ -93,12 +131,13 @@ case $INSTALL_TYPE in
         ;;
     macports)
         py_mm_nodot=`get_py_mm_nodot`
-        sudo port install $py_mm_nodot-numpy libpng freetype
+        sudo port install py$py_mm_nodot-numpy libpng freetype
         require_success "Failed to install matplotlib dependencies"
         ;;
     macpython):
         install_tkl_85
         install_libpng $PNG_VERSION
+        install_bz2 $BZ2_VERSION
         install_freetype $FT_VERSION
         ;;
 esac
