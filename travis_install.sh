@@ -18,29 +18,13 @@ XQUARTZ_VERSION="2.7.4"
 SYS_CC=clang
 SYS_CXX=clang++
 
-function cc_cmd {
-    local new_cc=$1
-    shift
-    local new_cxx=$1
-    shift
-    local old_cc=$CC
-    local old_cxx=$CXX
-    export CC=$new_cc
-    export CXX=$new_cxx
-    $@
-    export CC=$old_cc
-    export CXX=$old_cxx
-}
-
 
 function install_matplotlib {
     # Accept c and c++ compilers, default to cc, c++
-    local mpl_cc=${1:-"cc"}
-    local mpl_cxx=${2:-"c++"}
     local sudo=`get_pip_sudo`
 
     cd matplotlib
-    cc_cmd $mpl_cc $mpl_cxx $sudo $PYTHON_EXE setup.py install
+    $sudo CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
     require_success "Failed to install matplotlib"
     cd ..
 }
@@ -64,7 +48,7 @@ function install_freetype {
     cd freetype-$ft_version
     require_success "Failed to cd to freetype directory"
 
-    cc_cmd ${SYS_CC} ${SYS_CXX} ./configure --enable-shared=no --enable-static=true
+    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
     make
     sudo make install
     require_success "Failed to install freetype $FT_VERSION"
@@ -80,7 +64,7 @@ function install_libpng {
     tar -xzf libpng.tar.gz
     cd libpng-$version
     require_success "Failed to cd to libpng directory"
-    cc_cmd ${SYS_CC} ${SYS_CXX} ./configure --enable-shared=no --enable-static=true
+    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
     make
     sudo make install
     require_success "Failed to install libpng $version"
@@ -121,7 +105,7 @@ esac
 # Numpy installation can be system-wide or from pip
 if [ -n "$VENV" ] && [[ $INSTALL_TYPE =~ ^(macports|system)$ ]]; then
     toggle_py_sys_site_packages
-else:
+else
     $PIP_CMD install numpy
 fi
-install_matplotlib $CC $CXX
+install_matplotlib
