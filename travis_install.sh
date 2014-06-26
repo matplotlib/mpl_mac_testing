@@ -17,10 +17,8 @@ XQ_BASE_URL=http://xquartz.macosforge.org/downloads/SL
 XQUARTZ_VERSION="2.7.4"
 
 # Compiler defaults
-# See http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa
-ADD_FLAGS="-Wno-error=unused-command-line-argument-hard-error-in-future"
-SYS_CC="clang $ADD_FLAGS"
-SYS_CXX="clang++ $ADD_FLAGS"
+SYS_CC=clang
+SYS_CXX=clang++
 
 
 function install_matplotlib {
@@ -123,6 +121,20 @@ function install_xquartz {
 }
 
 
+function patch_sys_python {
+    # Fixes error discussed here:
+    # http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa
+    # Present for OSX 10.9.2 fixed in 10.9.3
+    # This should be benign for 10.9.3 though
+    local py_sys_dir="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7"
+    pushd $py_sys_dir
+    if [ -n "`grep fused-add _sysconfigdata.py`" ]; then
+        sudo sed -i '.old' 's/ -m\(no-\)\{0,1\}fused-madd //g' _sysconfigdata.py
+        sudo rm _sysconfigdata.pyo _sysconfigdata.pyc
+    fi
+    popd
+}
+
 get_python_environment $INSTALL_TYPE $VERSION $VENV
 
 case $INSTALL_TYPE in
@@ -149,4 +161,9 @@ if [ -n "$VENV" ] && [[ $INSTALL_TYPE =~ ^(macports|system)$ ]]; then
 else
     $PIP_CMD install numpy
 fi
+# Patch system python install flags if building against system python
+if [ "$INSTALL_TYPE" == "system" ]; then
+    patch_sys_python
+fi
+
 install_matplotlib
