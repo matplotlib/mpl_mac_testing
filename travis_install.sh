@@ -125,7 +125,6 @@ function patch_sys_python {
     local py_sys_dir="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7"
     pushd $py_sys_dir
     if [ -n "`grep fused-madd _sysconfigdata.py`" ]; then
-        cat _sysconfigdata.py
         sudo sed -i '.old' 's/ -m\(no-\)\{0,1\}fused-madd//g' _sysconfigdata.py
         sudo rm _sysconfigdata.pyo _sysconfigdata.pyc
     fi
