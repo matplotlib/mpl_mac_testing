@@ -10,6 +10,32 @@ env:
 
   matrix:
     - INSTALL_TYPE=macpython VERSION=2.7.6
+    - INSTALL_TYPE=macpython VERSION=2.7.6 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=2.7.6 ARCH="arch -i386"
+    - INSTALL_TYPE=macpython VERSION=3.3.5
+    - INSTALL_TYPE=macpython VERSION=3.3.5 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=3.3.5 ARCH="arch -i386"
+    - INSTALL_TYPE=macpython VERSION=3.4.1
+    - INSTALL_TYPE=macpython VERSION=3.4.1 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=3.4.1 ARCH="arch -i386"
+
+    # This next guy always fails because of a busted matplotlib in:
+    # ``/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python``
+    # Without the virtualenv, none of pip installs of numpy, scipy, matplotlib
+    # get above the Extras directory on the path, so we always get the system
+    # version
+    # - INSTALL_TYPE=system VERSION=2.7
+    - INSTALL_TYPE=system VERSION=2.7 VENV=venv
+    - INSTALL_TYPE=homebrew VERSION=2
+    - INSTALL_TYPE=homebrew VERSION=2 VENV=venv
+    - INSTALL_TYPE=homebrew VERSION=3
+    - INSTALL_TYPE=homebrew VERSION=3 VENV=venv
+    - INSTALL_TYPE=macports VERSION=2.7
+    - INSTALL_TYPE=macports VERSION=2.7 VENV=venv
+    - INSTALL_TYPE=macports VERSION=3.3
+    - INSTALL_TYPE=macports VERSION=3.3 VENV=venv
+    - INSTALL_TYPE=macports VERSION=3.4
+    - INSTALL_TYPE=macports VERSION=3.4 VENV=venv
 
 before_script:
     # This seems to be broken at the moment
