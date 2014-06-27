@@ -30,9 +30,9 @@ function install_matplotlib {
     # Can't just prepend empty sudo; causes error of form "CC=clang command
     # not found"
     if [ -z "$sudo" ]; then
-        CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng" $PYTHON_EXE setup.py install
+        CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lbz2" $PYTHON_EXE setup.py install
     else
-        sudo CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lpng" $PYTHON_EXE setup.py install
+        sudo CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lbz2" $PYTHON_EXE setup.py install
     fi
     require_success "Failed to install matplotlib"
     cd ..
@@ -176,7 +176,7 @@ case $INSTALL_TYPE in
         install_libpng $PNG_VERSION
         install_bz2 $BZ2_VERSION
         install_freetype $FT_VERSION
-        write_mpl_setup
+        # write_mpl_setup
         ;;
 esac
 # Numpy installation can be system-wide or from pip
