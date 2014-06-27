@@ -39,15 +39,6 @@ function install_matplotlib {
 }
 
 
-function write_mpl_setup {
-    # Write matplotlib setup.cfg file to find built libraries
-    cat << EOF > matplotlib/setup.cfg
-[directories]
-basedirlist = /usr/local, /usr
-EOF
-}
-
-
 function install_tkl_85 {
     curl $TCL_RELEASE_DMG > ActiveTCL.dmg
     require_success "Failed to download TCL $TCL_VERSION"
@@ -65,19 +56,6 @@ function check_version {
 }
 
 
-function install_pkgconfig {
-    local version=$1
-    check_version
-    curl $PKG_CONFIG_URL/pkg-config-$version.tar.gz > pkg-config.tar.gz
-    tar -xzf pkg-config.tar.gz
-    cd pkg-config-$version
-    ./configure --with-internal-glib
-    make
-    sudo make install
-    cd ..
-}
-
-
 function install_libpng {
     local version=$1
     check_version
@@ -91,23 +69,6 @@ function install_libpng {
     make
     sudo make install
     require_success "Failed to install libpng $version"
-    cd ..
-}
-
-
-function install_bz2 {
-    local version=$1
-    check_version
-    http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz
-    curl -L $BZ2_BASE_URL/$version/bzip2-$version.tar.gz > bzip2.tar.gz
-    require_success "Failed to download bz2"
-
-    tar -xzf bzip2.tar.gz
-    cd bzip2-$version
-    require_success "Failed to cd to bz2 directory"
-    CC=${SYS_CC} CXX=${SYS_CXX} make
-    sudo make install
-    require_success "Failed to install bz2 $version"
     cd ..
 }
 
@@ -171,12 +132,9 @@ case $INSTALL_TYPE in
         require_success "Failed to install matplotlib dependencies"
         ;;
     macpython):
-        # install_pkgconfig $PKG_CONFIG_VERSION
         install_tkl_85
         install_libpng $PNG_VERSION
-        # install_bz2 $BZ2_VERSION
         install_freetype $FT_VERSION
-        # write_mpl_setup
         ;;
 esac
 # Numpy installation can be system-wide or from pip
