@@ -30,9 +30,9 @@ function install_matplotlib {
     # Can't just prepend empty sudo; causes error of form "CC=clang command
     # not found"
     if [ -z "$sudo" ]; then
-        CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lbz2" $PYTHON_EXE setup.py install
+        CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
     else
-        sudo CC=$SYS_CC CXX=$SYS_CXX LDFLAGS="-lbz2" $PYTHON_EXE setup.py install
+        sudo CC=$SYS_CC CXX=$SYS_CXX $PYTHON_EXE setup.py install
     fi
     require_success "Failed to install matplotlib"
     cd ..
@@ -122,7 +122,7 @@ function install_freetype {
     cd freetype-$version
     require_success "Failed to cd to freetype directory"
 
-    CC=${SYS_CC} CXX=${SYS_CXX} LDFLAGS="-lpng -lbz2" ./configure --enable-shared=no --enable-static=true
+    CC=${SYS_CC} CXX=${SYS_CXX} LDFLAGS="-lpng -lbz2" ./configure
     make
     sudo make install
     require_success "Failed to install freetype $version"
@@ -171,10 +171,10 @@ case $INSTALL_TYPE in
         require_success "Failed to install matplotlib dependencies"
         ;;
     macpython):
-        install_pkgconfig $PKG_CONFIG_VERSION
+        # install_pkgconfig $PKG_CONFIG_VERSION
         install_tkl_85
         install_libpng $PNG_VERSION
-        install_bz2 $BZ2_VERSION
+        # install_bz2 $BZ2_VERSION
         install_freetype $FT_VERSION
         # write_mpl_setup
         ;;
