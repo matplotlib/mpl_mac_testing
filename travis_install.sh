@@ -9,14 +9,10 @@ FT_BASE_URL=http://sourceforge.net/projects/freetype/files/freetype2
 FT_VERSION="2.5.3"
 PNG_BASE_URL=http://downloads.sourceforge.net/project/libpng/libpng16
 PNG_VERSION="1.6.10"
-BZ2_BASE_URL=http://www.bzip.org
-BZ2_VERSION=1.0.6
 TCL_VERSION="8.5.14.0"
 TCL_RELEASE_DMG="http://downloads.activestate.com/ActiveTcl/releases/$TCL_VERSION/ActiveTcl$TCL_VERSION.296777-macosx10.5-i386-x86_64-threaded.dmg"
 XQ_BASE_URL=http://xquartz.macosforge.org/downloads/SL
 XQUARTZ_VERSION="2.7.4"
-PKG_CONFIG_URL=http://pkgconfig.freedesktop.org/releases
-PKG_CONFIG_VERSION=0.28
 
 # Compiler defaults
 SYS_CC=clang
