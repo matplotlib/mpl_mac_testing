@@ -39,6 +39,15 @@ function install_matplotlib {
 }
 
 
+function write_mpl_setup {
+    # Write matplotlib setup.cfg file to find built libraries
+    cat << EOF > matplotlib/setup.cfg
+[directories]
+basedirlist = /usr/local, /usr
+EOF
+}
+
+
 function install_tkl_85 {
     curl $TCL_RELEASE_DMG > ActiveTCL.dmg
     require_success "Failed to download TCL $TCL_VERSION"
@@ -167,6 +176,7 @@ case $INSTALL_TYPE in
         install_libpng $PNG_VERSION
         install_bz2 $BZ2_VERSION
         install_freetype $FT_VERSION
+        write_mpl_setup
         ;;
 esac
 # Numpy installation can be system-wide or from pip
