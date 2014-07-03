@@ -3,16 +3,7 @@
 
 # Get needed utilities
 source terryfy/travis_tools.sh
-
-# Package versions / URLs for fresh source builds (MacPython only)
-FT_BASE_URL=http://sourceforge.net/projects/freetype/files/freetype2
-FT_VERSION="2.5.3"
-PNG_BASE_URL=http://downloads.sourceforge.net/project/libpng/libpng16
-PNG_VERSION="1.6.10"
-TCL_VERSION="8.5.14.0"
-TCL_RELEASE_DMG="http://downloads.activestate.com/ActiveTcl/releases/$TCL_VERSION/ActiveTcl$TCL_VERSION.296777-macosx10.5-i386-x86_64-threaded.dmg"
-XQ_BASE_URL=http://xquartz.macosforge.org/downloads/SL
-XQUARTZ_VERSION="2.7.4"
+source library_installers.sh
 
 # Compiler defaults
 SYS_CC=clang
@@ -35,85 +26,6 @@ function install_matplotlib {
 }
 
 
-function install_tkl_85 {
-    curl $TCL_RELEASE_DMG > ActiveTCL.dmg
-    require_success "Failed to download TCL $TCL_VERSION"
-    hdiutil attach ActiveTCL.dmg -mountpoint /Volumes/ActiveTcl
-    sudo installer -pkg /Volumes/ActiveTcl/ActiveTcl-8.5.pkg -target /
-    require_success "Failed to install ActiveTcl $TCL_VERSION"
-}
-
-
-function check_version {
-    if [ -z "$version" ]; then
-        echo "Need version"
-        exit 1
-    fi
-}
-
-
-function install_libpng {
-    local version=$1
-    check_version
-    curl -L $PNG_BASE_URL/$version/libpng-$version.tar.gz > libpng.tar.gz
-    require_success "Failed to download libpng"
-
-    tar -xzf libpng.tar.gz
-    cd libpng-$version
-    require_success "Failed to cd to libpng directory"
-    CC=${SYS_CC} CXX=${SYS_CXX} ./configure --enable-shared=no --enable-static=true
-    make
-    sudo make install
-    require_success "Failed to install libpng $version"
-    cd ..
-}
-
-
-function install_freetype {
-    local version=$1
-    check_version
-    curl -L $FT_BASE_URL/$version/freetype-$version.tar.bz2/download > freetype.tar.bz2
-    require_success "Failed to download freetype"
-
-    tar -xjf freetype.tar.bz2
-    cd freetype-$version
-    require_success "Failed to cd to freetype directory"
-
-    CC=${SYS_CC} CXX=${SYS_CXX} LDFLAGS="-lpng -lbz2" ./configure
-    make
-    sudo make install
-    require_success "Failed to install freetype $version"
-    cd ..
-}
-
-
-function install_xquartz {
-    local version=$1
-    check_version
-    curl $XQ_BASE_URL/XQuartz-$version.dmg > xquartz.dmg
-    require_success "failed to download XQuartz"
-
-    hdiutil attach xquartz.dmg -mountpoint /Volumes/XQuartz
-    sudo installer -pkg /Volumes/XQuartz/XQuartz.pkg -target /
-    require_success "Failed to install XQuartz $version"
-}
-
-
-function patch_sys_python {
-    # Fixes error discussed here:
-    # http://stackoverflow.com/questions/22313407/clang-error-unknown-argument-mno-fused-madd-python-package-installation-fa
-    # Present for OSX 10.9.2 fixed in 10.9.3
-    # This should be benign for 10.9.3 though
-    local py_sys_dir="/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7"
-    pushd $py_sys_dir
-    if [ -n "`grep fused-madd _sysconfigdata.py`" ]; then
-        sudo sed -i '.old' 's/ -m\(no-\)\{0,1\}fused-madd//g' _sysconfigdata.py
-        sudo rm _sysconfigdata.pyo _sysconfigdata.pyc
-    fi
-    popd
-}
-
-
 get_python_environment $INSTALL_TYPE $VERSION $VENV
 
 case $INSTALL_TYPE in
@@ -128,9 +40,10 @@ case $INSTALL_TYPE in
         require_success "Failed to install matplotlib dependencies"
         ;;
     macpython):
-        install_tkl_85
-        install_libpng $PNG_VERSION
-        install_freetype $FT_VERSION
+        init_vars
+        install_zlib
+        install_libpng
+        install_freetype
         ;;
 esac
 # Numpy installation can be system-wide or from pip
