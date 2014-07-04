@@ -41,6 +41,7 @@ function macpython_mpl_install {
     check_var $BUILD_PREFIX
     check_var $SYS_CC
     check_var $SYS_CXX
+    check_var $PYTHON_EXE
     check_var $PIP_CMD
     cd matplotlib
     cat << EOF > setup.cfg
@@ -49,7 +50,7 @@ function macpython_mpl_install {
 # This can be a single directory or a comma-delimited list of directories.
 basedirlist = $BUILD_PREFIX, /usr
 EOF
-    CC=${SYS_CC} CXX=${SYS_CXX} python setup.py bdist_wheel
+    CC=${SYS_CC} CXX=${SYS_CXX} $PYTHON_EXE setup.py bdist_wheel
     require_success "Matplotlib build failed"
     delocate-wheel dist/*.whl
     rename_wheels dist/*.whl
