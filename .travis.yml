@@ -9,9 +9,9 @@ env:
     - secure: uxYSxs3D3ZOTNjRg0vKk1YsOpG5vWshekMixV4lEuwcSnLJtNHUhZvzoj11GLwqHokTaYXlM1TvFMm7oQBwtW5B+dacnOFar3MJlvu96n+B1CG6ldiIy4uZd+DKR7la0vwK7aTOKyiMK+vWQe8C0kCYBTcN0UiVQn/2nUlFgioM=
 
   matrix:
-    - INSTALL_TYPE=macpython VERSION=2.7.6
-    - INSTALL_TYPE=macpython VERSION=2.7.6 VENV=venv
-    - INSTALL_TYPE=macpython VERSION=2.7.6 ARCH="arch -i386"
+    - INSTALL_TYPE=macpython VERSION=2.7.8
+    - INSTALL_TYPE=macpython VERSION=2.7.8 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=2.7.8 ARCH="arch -i386"
     - INSTALL_TYPE=macpython VERSION=3.3.5
     - INSTALL_TYPE=macpython VERSION=3.3.5 VENV=venv
     - INSTALL_TYPE=macpython VERSION=3.3.5 ARCH="arch -i386"
