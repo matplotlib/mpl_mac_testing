@@ -1,17 +1,28 @@
 # Travis install
 # source this script to run the install on travis OSX workers
+#
+# Needs variables
+#     INSTALL_TYPE
+#     VERSION
 
 # Get needed utilities
 source terryfy/travis_tools.sh
-source library_installers.sh
+
+check_var $INSTALL_TYPE
+check_var $VERSION
 
 # Compiler defaults
 SYS_CC=clang
 SYS_CXX=clang++
 
+# Lowest numpy versions for python.org python and matplotlib
+NUMPY_VERSIONS[3]=1.7.1
+NUMPY_VERSIONS[2]=1.5.1
 
-function install_matplotlib {
-    # Accept c and c++ compilers, default to cc, c++
+
+function mpl_install {
+    check_var $SYS_CC
+    check_var $SYS_CXX
     local sudo=`get_pip_sudo`
     cd matplotlib
     # Can't just prepend empty sudo; causes error of form "CC=clang command
@@ -26,35 +37,65 @@ function install_matplotlib {
 }
 
 
+function macpython_mpl_install {
+    check_var $BUILD_PREFIX
+    check_var $SYS_CC
+    check_var $SYS_CXX
+    check_var $PIP_CMD
+    cd matplotlib
+    cat << EOF > setup.cfg
+[directories]
+# 0verride the default basedir in setupext.py.
+# This can be a single directory or a comma-delimited list of directories.
+basedirlist = $BUILD_PREFIX, /usr
+EOF
+    CC=${SYS_CC} CXX=${SYS_CXX} python setup.py bdist_wheel
+    require_success "Matplotlib build failed"
+    delocate-wheel dist/*.whl
+    rename_wheels dist/*.whl
+    $PIP_CMD install dist/*.whl
+    cd ..
+}
+
+
 get_python_environment $INSTALL_TYPE $VERSION $VENV
 
 case $INSTALL_TYPE in
-    homebrew|system)
+    homebrew)
         brew update
         brew install freetype libpng pkg-config
         require_success "Failed to install matplotlib dependencies"
+        $PIP_CMD install numpy
+        mpl_install
+        ;;
+    system)
+        patch_sys_python
+        brew update
+        brew install freetype libpng pkg-config
+        require_success "Failed to install matplotlib dependencies"
+        if [ -n "$VENV" ]; then
+            toggle_py_sys_site_packages;
+        else
+            $PIP_CMD install numpy
+        fi
+        mpl_install
         ;;
     macports)
         py_mm_nodot=`get_py_mm_nodot`
         sudo port install py$py_mm_nodot-numpy libpng freetype pkgconfig
         require_success "Failed to install matplotlib dependencies"
+        if [ -n "$VENV" ]; then
+            toggle_py_sys_site_packages;
+        else
+            $PIP_CMD install numpy
+        fi
+        mpl_install
         ;;
     macpython):
-        init_vars
-        install_zlib
-        install_libpng
-        install_freetype
+        source run_install.sh
+        np_version=${NUMPY_VERSIONS[${VERSION:0:1}]}
+        $PIP_CMD install -f $NIPY_WHEELHOUSE numpy==$np_version
+        $PIP_CMD install delocate
+        macpython_mpl_install
         ;;
 esac
-# Numpy installation can be system-wide or from pip
-if [ -n "$VENV" ] && [[ $INSTALL_TYPE =~ ^(macports|system)$ ]]; then
-    toggle_py_sys_site_packages
-else
-    $PIP_CMD install numpy
-fi
-# Patch system python install flags if building against system python
-if [ "$INSTALL_TYPE" == "system" ]; then
-    patch_sys_python
-fi
-
-install_matplotlib
