@@ -19,6 +19,10 @@ SYS_CXX=clang++
 NUMPY_VERSIONS[3]=1.7.1
 NUMPY_VERSIONS[2]=1.5.1
 
+# Package versions
+XQUARTZ_VERSION=2.7.6
+XQUARTZ_BASE_URL=http://xquartz-dl.macosforge.org/SL
+
 
 function mpl_install {
     check_var $SYS_CC
@@ -56,6 +60,17 @@ EOF
     rename_wheels dist/*.whl
     $PIP_CMD install dist/*.whl
     cd ..
+}
+
+
+function install_xquartz {
+    check_var $XQUARTZ_VERSION
+    check_var $XQUARTZ_BASE_URL
+    curl $XQUARTZ_BASE_URL/XQuartz-$XQUARTZ_VERSION.dmg > xquartz.dmg
+    require_success "failed to download XQuartz"
+    hdiutil attach xquartz.dmg -mountpoint /Volumes/XQuartz
+    sudo installer -pkg /Volumes/XQuartz/XQuartz.pkg -target /
+    require_success "Failed to install XQuartz $version"
 }
 
 
@@ -97,6 +112,7 @@ case $INSTALL_TYPE in
         np_version=${NUMPY_VERSIONS[${VERSION:0:1}]}
         $PIP_CMD install -f $NIPY_WHEELHOUSE numpy==$np_version
         $PIP_CMD install delocate
+        install_xquartz
         macpython_mpl_install
         ;;
 esac
