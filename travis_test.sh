@@ -8,4 +8,5 @@ $PYTHON_EXE -c "import matplotlib; print(matplotlib.__file__)"
 $PYTHON_EXE -c "from matplotlib import font_manager"
 
 echo "testing matplotlib using 8 processess"
-$PYTHON_EXE ../matplotlib/tests.py -sv --processes=8 --process-timeout=300
+$PYTHON_EXE ../matplotlib/tests.py -sv --processes=8 --process-timeout=300 \
+    --verbosity=4
