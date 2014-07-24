@@ -17,7 +17,7 @@ SYS_CXX=clang++
 
 # Lowest numpy versions for python.org python and matplotlib
 NUMPY_VERSIONS[3]=1.7.1
-NUMPY_VERSIONS[2]=1.5.1
+NUMPY_VERSIONS[2]=1.6.0
 
 # Package versions
 XQUARTZ_VERSION=2.7.6
