@@ -112,7 +112,6 @@ case $INSTALL_TYPE in
         np_version=${NUMPY_VERSIONS[${VERSION:0:1}]}
         $PIP_CMD install -f $NIPY_WHEELHOUSE numpy==$np_version
         $PIP_CMD install delocate
-        install_xquartz
         macpython_mpl_install
         ;;
 esac
