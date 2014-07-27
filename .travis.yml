@@ -44,6 +44,7 @@ before_script:
 
 install:
   - set -vx  # echo commands
+  - git config --global core.pager '' # disable git paging
   - git clone http://github.com/matplotlib/matplotlib.git
   - cd matplotlib
   - git checkout $MPL_BRANCH
