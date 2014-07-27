@@ -44,6 +44,9 @@ before_script:
 
 install:
   - set -vx  # echo commands
+  # increase number of open files allowed
+  # https://github.com/matplotlib/matplotlib/issues/3315
+  - ulimit -n 4096
   - git config --global core.pager '' # disable git paging
   - git clone http://github.com/matplotlib/matplotlib.git
   - cd matplotlib
