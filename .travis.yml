@@ -7,53 +7,60 @@ env:
     - ARTIFACTS_S3_BUCKET=matplotlib-test-results
     - secure: RTMoQnCFDKYyDniegep9nARI5bKroF1TpN/aQf02KwLia0z5IZ4eoiFxTufexgB2afXtpAa2LDZg2+ulD9+SZQ+h7GHibMEVpcOTv4ojy+ekiRAQ6OW9glrcidFoIfISJNrrNZL7mTC6baEhnjjsH0mErpBTcfZSpFpLOSNjpSs=
     - secure: uxYSxs3D3ZOTNjRg0vKk1YsOpG5vWshekMixV4lEuwcSnLJtNHUhZvzoj11GLwqHokTaYXlM1TvFMm7oQBwtW5B+dacnOFar3MJlvu96n+B1CG6ldiIy4uZd+DKR7la0vwK7aTOKyiMK+vWQe8C0kCYBTcN0UiVQn/2nUlFgioM=
+    - MPL_BRANCH=v1.4.x
 
   matrix:
-    - TEST='macpython27_10.8'
-    - TEST='macpython27_10.8' BIN_NUMPY='1'
-    - TEST='macpython33_10.8'
-    # no python 3 numpy installer
-    #- TEST='macpython33_10.8' BIN_NUMPY='1'
+    - INSTALL_TYPE=macpython VERSION=2.7.8
+    - INSTALL_TYPE=macpython VERSION=2.7.8 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=2.7.8 ARCH="arch -i386"
+    - INSTALL_TYPE=macpython VERSION=3.3.5
+    - INSTALL_TYPE=macpython VERSION=3.3.5 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=3.3.5 ARCH="arch -i386"
+    - INSTALL_TYPE=macpython VERSION=3.4.1
+    - INSTALL_TYPE=macpython VERSION=3.4.1 VENV=venv
+    - INSTALL_TYPE=macpython VERSION=3.4.1 ARCH="arch -i386"
 
-    - TEST='brew_system'
-    - TEST='brew_system' VENV='1'
-
-    - TEST='brew_py'
-    - TEST='brew_py' VENV='1'
-
-    - TEST='brew_py3'
-    - TEST='brew_py3' VENV='1'
-
-    - TEST='macports' PY='2.6'
-    - TEST='macports' PY='2.6' VENV='1'
-
-    - TEST='macports_py27'
-    - TEST='macports_py27' VENV='1'
-
-    - TEST='macports' PY='3.2'
-    - TEST='macports' PY='3.2' VENV='1'
-
-    - TEST='macports_py33'
-    - TEST='macports_py33' VENV='1'
+    # This next guy always fails because of a busted matplotlib in:
+    # ``/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python``
+    # Without the virtualenv, none of pip installs of numpy, scipy, matplotlib
+    # get above the Extras directory on the path, so we always get the system
+    # version
+    # - INSTALL_TYPE=system VERSION=2.7
+    - INSTALL_TYPE=system VERSION=2.7 VENV=venv
+    - INSTALL_TYPE=homebrew VERSION=2
+    - INSTALL_TYPE=homebrew VERSION=2 VENV=venv
+    - INSTALL_TYPE=homebrew VERSION=3
+    - INSTALL_TYPE=homebrew VERSION=3 VENV=venv
+    - INSTALL_TYPE=macports VERSION=2.7
+    - INSTALL_TYPE=macports VERSION=2.7 VENV=venv
+    - INSTALL_TYPE=macports VERSION=3.3
+    - INSTALL_TYPE=macports VERSION=3.3 VENV=venv
+    - INSTALL_TYPE=macports VERSION=3.4
+    - INSTALL_TYPE=macports VERSION=3.4 VENV=venv
 
 before_script:
-  - gem install travis-artifacts
+    # This seems to be broken at the moment
+    # - gem install travis-artifacts
 
 install:
   - set -vx  # echo commands
+  # increase number of open files allowed
+  # https://github.com/matplotlib/matplotlib/issues/3315
+  - ulimit -n 4096
+  - git config --global core.pager '' # disable git paging
   - git clone http://github.com/matplotlib/matplotlib.git
   - cd matplotlib
-  - git checkout master
+  - git checkout $MPL_BRANCH
   - git log -n 1
   - cd ..
-  - source ./install.sh
+  - source ./travis_install.sh
 
 script:
   - echo $PWD
   - mkdir tmp_test_dir
   - cd tmp_test_dir
-  - source ../test.sh
+  - source ../travis_test.sh
 
 after_failure:
-  - echo $PWD
-  - ../travis_upload.sh
+    - echo $PWD
+    # - ../travis_upload.sh
